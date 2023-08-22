@@ -1,0 +1,32 @@
+version: "3"
+
+services:
+    proxy:
+        image: nginx:latest
+        restart: always
+        ports:
+            - "8080:80"
+        volumes:
+            - ./nginx-sites/html:/usr/share/nginx/html
+
+    gitlab:
+        image: 'gitlab/gitlab-ce:latest'
+        restart: always
+        hostname: 'localhost'
+        container_name: gitlab-ce
+        environment:
+            GITLAB_OMNIBUS_CONFIG: |
+                external_url 'http://localhost'
+        ports:
+            - '8081:80'
+            - '8443:443'
+        volumes:
+            - './gitlab/config:/etc/gitlab'
+            - './gitlab/logs:/var/log/gitlab'
+            - './gitlab/data:/var/opt/gitlab'
+        networks:
+            - gitlab
+
+networks:
+    gitlab:
+        name: gitlab-network
